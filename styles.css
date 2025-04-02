@@ -1,0 +1,110 @@
+/* Custom styles */
+.hero {
+    background-color: #f5f5f5;
+}
+
+/* Reduce spacing between sections */
+.section+.section {
+    padding-top: 0;
+}
+
+.logout-button {
+    color: #363636;
+    transition: color 0.2s ease;
+}
+
+.select select {
+    width: 100%;
+}
+
+/* Add some spacing between elements */
+.field:not(:last-child) {
+    margin-bottom: 1.5rem;
+}
+
+/* Style the select dropdown */
+.select:not(.is-multiple):not(.is-loading)::after {
+    border-color: #3273dc;
+}
+
+/* Add hover effect to buttons */
+.button.is-primary:hover {
+    background-color: #276cda;
+}
+
+.number-options {
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+}
+
+.number-option {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.number-option:hover {
+    background-color: #f5f5f5;
+}
+
+.number-option.selected {
+    background-color: #3273dc;
+    color: white;
+}
+
+.number-option:not(:last-child) {
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.error-text {
+    color: #dc3545;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Edit mode styles */
+.number-option.edit-mode {
+    padding: 1rem;
+}
+
+.number-option.edit-mode .field {
+    margin-bottom: 0;
+}
+
+.number-option.edit-mode .field-body {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.number-option.edit-mode .field {
+    flex: 1;
+}
+
+.number-option.edit-mode .field:last-child {
+    flex: 0 0 auto;
+}
+
+.number-option.edit-mode input {
+    width: 100%;
+}
+
+.number-option.edit-mode .delete-contact {
+    padding: 0.25rem 0.5rem;
+}
+
+.number-option.edit-mode .delete-contact:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Add contact button styles */
+.number-option button.is-info {
+    width: 100%;
+    margin: 0;
+}
+
+.number-option button.is-info:hover {
+    background-color: #209cee;
+    color: white;
+}

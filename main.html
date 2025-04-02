@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Forwarding Number</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1493.0.min.js"></script>
+    <style>
+        .container.narrow-container {
+            max-width: 650px !important;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container narrow-container">
+            <div class="level">
+                <div class="level-left">
+                    <h1 class="title">Set Forwarding Number</h1>
+                </div>
+                <div class="level-right">
+                    <a href="index.html" class="button is-text logout-button">Log out</a>
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="level is-mobile">
+                    <div class="level-left">
+                    </div>
+                    <div class="level-right">
+                        <button class="button is-text" id="editContactsButton">
+                            <span class="icon">
+                                <i class="fas fa-edit"></i>
+                            </span>
+                            <span>Edit Contacts</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <div class="number-options">
+                            <div class="has-text-centered has-text-grey">
+                                Loading...
+                            </div>
+                            <div class="number-option" data-value="custom" id="customOption">
+                                Other Number
+                            </div>
+                            <div class="field" id="customNumberField" style="display: none; margin-top: 0.5rem;">
+                                <div class="control">
+                                    <input class="input" type="tel" id="customNumberInput"
+                                        placeholder="Enter phone number (e.g. 1234567890)">
+                                    <p class="help is-danger" id="customNumberError" style="display: none;">Please enter
+                                        a valid phone number with digits only</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button id="applyButton" class="button is-success is-fullwidth">Apply Forwarding</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container narrow-container">
+            <div class="box">
+                <div style="margin-bottom: 0;" class="level is-mobile">
+                    <div class="level-left">
+                        <h2 class="subtitle is-6">Show all updates</h2>
+                    </div>
+                    <div class="level-right">
+                        <button class="button is-text" id="toggleUpdates">
+                            <span class="icon">
+                                <i class="fas fa-chevron-down"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div id="updatesContent" style="display: none;">
+                    <div class="content is-small">
+                        <ul id="updatesList" class="is-size-7">
+                            <!-- Updates will be populated here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
