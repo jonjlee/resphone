@@ -211,12 +211,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const addButton = document.createElement('div');
             addButton.className = 'number-option';
             addButton.innerHTML = `
-                <button class="button is-info is-small is-fullwidth">
-                    <span class="icon">
-                        <i class="fas fa-plus"></i>
-                    </span>
-                    <span>Add Contact</span>
-                </button>
+                <div class="has-text-right">
+                    <button class="button is-primary is-rounded is-small">
+                        <span class="icon">
+                            <i class="fas fa-plus"></i>
+                        </span>
+                        <span>Add Contact</span>
+                    </button>
+                </div>
             `;
             numberOptions.insertBefore(addButton, customOption);
 
