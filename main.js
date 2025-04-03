@@ -92,22 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayContacts(config) {
         if (!config) return;
 
-        // Save current input values before clearing
-        const currentInputs = [];
-        if (isEditMode) {
-            const existingOptions = numberOptions.querySelectorAll('.edit-mode');
-            existingOptions.forEach(option => {
-                const nameInput = option.querySelector('.contact-name');
-                const phoneInput = option.querySelector('.contact-phone');
-                if (nameInput && phoneInput) {
-                    currentInputs.push({
-                        name: nameInput.value,
-                        phone: phoneInput.value
-                    });
-                }
-            });
-        }
-
         // Clear existing options except custom and loading
         const existingOptions = numberOptions.querySelectorAll('.number-option:not(#customOption)');
         existingOptions.forEach(opt => opt.remove());
@@ -165,6 +149,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
                 numberOptions.insertBefore(option, customOption);
+
+                // Add input blur handlers to update config
+                const nameInput = option.querySelector('.contact-name');
+                const phoneInput = option.querySelector('.contact-phone');
+
+                nameInput.addEventListener('blur', () => {
+                    config.contacts[index].name = nameInput.value;
+                });
+
+                phoneInput.addEventListener('blur', () => {
+                    config.contacts[index].phone = phoneInput.value;
+                });
 
                 // Add delete button handler
                 option.querySelector('.delete-contact').addEventListener('click', () => {
@@ -226,33 +222,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Add new contact handler
             addButton.querySelector('button').addEventListener('click', () => {
-                // Save all current input values
-                const currentInputs = [];
-                const existingOptions = numberOptions.querySelectorAll('.edit-mode');
-                existingOptions.forEach(option => {
-                    const nameInput = option.querySelector('.contact-name');
-                    const phoneInput = option.querySelector('.contact-phone');
-                    if (nameInput && phoneInput) {
-                        currentInputs.push({
-                            name: nameInput.value,
-                            phone: phoneInput.value
-                        });
-                    }
-                });
-
                 // Add new contact
                 config.contacts.push({ name: '', phone: '' });
-
-                // Restore all saved values
-                currentInputs.forEach((input, index) => {
-                    if (config.contacts[index]) {
-                        config.contacts[index] = {
-                            name: input.name,
-                            phone: input.phone
-                        };
-                    }
-                });
-
                 displayContacts(config);
             });
         } else {
