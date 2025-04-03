@@ -88,6 +88,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayContacts() {
         if (!currentConfig) return;
 
+        // Save current input values before clearing
+        const currentInputs = [];
+        if (isEditMode) {
+            const existingOptions = numberOptions.querySelectorAll('.edit-mode');
+            existingOptions.forEach(option => {
+                const nameInput = option.querySelector('.contact-name');
+                const phoneInput = option.querySelector('.contact-phone');
+                if (nameInput && phoneInput) {
+                    currentInputs.push({
+                        name: nameInput.value,
+                        phone: phoneInput.value
+                    });
+                }
+            });
+        }
+
         // Clear existing options except custom and loading
         const existingOptions = numberOptions.querySelectorAll('.number-option:not(#customOption)');
         existingOptions.forEach(opt => opt.remove());
@@ -114,12 +130,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="field-body">
                             <div class="field">
                                 <div class="control">
-                                    <input class="input contact-name" type="text" value="${contact.name}" placeholder="Name">
+                                    <input class="input contact-name" type="text" value="${currentInputs[index]?.name || contact.name}" placeholder="Name">
                                 </div>
                             </div>
                             <div class="field">
                                 <div class="control">
-                                    <input class="input contact-phone" type="tel" value="${contact.phone}" placeholder="Phone">
+                                    <input class="input contact-phone" type="tel" value="${currentInputs[index]?.phone || contact.phone}" placeholder="Phone">
                                 </div>
                             </div>
                             <div class="field">
@@ -206,7 +222,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Add new contact handler
             addButton.querySelector('button').addEventListener('click', () => {
+                // Save all current input values
+                const currentInputs = [];
+                const existingOptions = numberOptions.querySelectorAll('.edit-mode');
+                existingOptions.forEach(option => {
+                    const nameInput = option.querySelector('.contact-name');
+                    const phoneInput = option.querySelector('.contact-phone');
+                    if (nameInput && phoneInput) {
+                        currentInputs.push({
+                            name: nameInput.value,
+                            phone: phoneInput.value
+                        });
+                    }
+                });
+
+                // Add new contact
                 currentConfig.contacts.push({ name: '', phone: '' });
+
+                // Restore all saved values
+                currentInputs.forEach((input, index) => {
+                    if (currentConfig.contacts[index]) {
+                        currentConfig.contacts[index] = {
+                            name: input.name,
+                            phone: input.phone
+                        };
+                    }
+                });
+
                 displayContacts();
             });
         } else {
