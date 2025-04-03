@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedOption = null;
     let currentConfig = null;
+    let editModeConfig = null;
     let isEditMode = false;
 
     // Handle edit mode toggle
@@ -39,12 +40,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const iconSpan = editContactsButton.querySelector('.icon');
         const iconElement = iconSpan?.querySelector('i');
         if (isEditMode) {
+            // Create a deep copy of the current config for edit mode
+            editModeConfig = JSON.parse(JSON.stringify(currentConfig));
             iconSpan.style.display = 'inline-block';
             if (iconElement) {
                 iconElement.className = 'fas fa-times';
             }
             editContactsButton.querySelector('span:not(.icon)').textContent = 'Discard Changes';
         } else {
+            // Discard changes by clearing the edit mode config
+            editModeConfig = null;
             iconSpan.style.display = 'inline-block';
             if (iconElement) {
                 iconElement.className = 'fas fa-edit';
@@ -52,8 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             editContactsButton.querySelector('span:not(.icon)').textContent = 'Edit Contacts';
         }
         applyButton.textContent = isEditMode ? 'Save Changes' : 'Apply Forwarding';
-        displayContacts();
-        updateApplyButtonState();
+        displayContacts(isEditMode ? editModeConfig : currentConfig);
     });
 
     // Handle updates expander toggle
@@ -84,9 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'index.html';
     });
 
-    // Function to display contacts in edit mode
-    function displayContacts() {
-        if (!currentConfig) return;
+    // Function to display contacts
+    function displayContacts(config) {
+        if (!config) return;
 
         // Save current input values before clearing
         const currentInputs = [];
@@ -122,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isEditMode) {
             // Display contacts in edit mode
-            currentConfig.contacts.forEach((contact, index) => {
+            config.contacts.forEach((contact, index) => {
                 const option = document.createElement('div');
                 option.className = 'number-option edit-mode';
                 option.innerHTML = `
@@ -130,12 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="field-body">
                             <div class="field">
                                 <div class="control">
-                                    <input class="input contact-name" type="text" value="${currentInputs[index]?.name || contact.name}" placeholder="Name">
+                                    <input class="input contact-name" type="text" value="${contact.name}" placeholder="Name">
                                 </div>
                             </div>
                             <div class="field">
                                 <div class="control">
-                                    <input class="input contact-phone" type="tel" value="${currentInputs[index]?.phone || contact.phone}" placeholder="Phone">
+                                    <input class="input contact-phone" type="tel" value="${contact.phone}" placeholder="Phone">
                                 </div>
                             </div>
                             <div class="field">
@@ -164,21 +168,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Add delete button handler
                 option.querySelector('.delete-contact').addEventListener('click', () => {
-                    currentConfig.contacts.splice(index, 1);
-                    displayContacts();
+                    config.contacts.splice(index, 1);
+                    displayContacts(config);
                 });
 
                 // Add move up handler
                 option.querySelector('.move-up').addEventListener('click', () => {
                     if (index > 0) {
-                        const temp = currentConfig.contacts[index];
-                        currentConfig.contacts[index] = currentConfig.contacts[index - 1];
-                        currentConfig.contacts[index - 1] = temp;
+                        const temp = config.contacts[index];
+                        config.contacts[index] = config.contacts[index - 1];
+                        config.contacts[index - 1] = temp;
                         // Update selected contact if this one was selected
-                        if (currentConfig.selected === temp.phone) {
-                            currentConfig.selected = temp.phone;
+                        if (config.selected === temp.phone) {
+                            config.selected = temp.phone;
                         }
-                        displayContacts();
+                        displayContacts(config);
                         // Highlight the moved contact
                         const movedOption = numberOptions.querySelector(`.edit-mode:nth-child(${index})`);
                         if (movedOption) {
@@ -189,15 +193,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Add move down handler
                 option.querySelector('.move-down').addEventListener('click', () => {
-                    if (index < currentConfig.contacts.length - 1) {
-                        const temp = currentConfig.contacts[index];
-                        currentConfig.contacts[index] = currentConfig.contacts[index + 1];
-                        currentConfig.contacts[index + 1] = temp;
+                    if (index < config.contacts.length - 1) {
+                        const temp = config.contacts[index];
+                        config.contacts[index] = config.contacts[index + 1];
+                        config.contacts[index + 1] = temp;
                         // Update selected contact if this one was selected
-                        if (currentConfig.selected === temp.phone) {
-                            currentConfig.selected = temp.phone;
+                        if (config.selected === temp.phone) {
+                            config.selected = temp.phone;
                         }
-                        displayContacts();
+                        displayContacts(config);
                         // Highlight the moved contact
                         const movedOption = numberOptions.querySelector(`.edit-mode:nth-child(${index + 2})`);
                         if (movedOption) {
@@ -237,23 +241,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // Add new contact
-                currentConfig.contacts.push({ name: '', phone: '' });
+                config.contacts.push({ name: '', phone: '' });
 
                 // Restore all saved values
                 currentInputs.forEach((input, index) => {
-                    if (currentConfig.contacts[index]) {
-                        currentConfig.contacts[index] = {
+                    if (config.contacts[index]) {
+                        config.contacts[index] = {
                             name: input.name,
                             phone: input.phone
                         };
                     }
                 });
 
-                displayContacts();
+                displayContacts(config);
             });
         } else {
             // Display contacts in normal mode
-            currentConfig.contacts.forEach(contact => {
+            config.contacts.forEach(contact => {
                 const option = document.createElement('div');
                 option.className = 'number-option';
                 option.dataset.value = contact.phone;
@@ -263,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Select the current forwarding number
-            const selectedPhone = currentConfig.selected;
+            const selectedPhone = config.selected;
             const matchingOption = numberOptions.querySelector(`[data-value="${selectedPhone}"]`);
 
             if (matchingOption) {
@@ -320,13 +324,28 @@ document.addEventListener('DOMContentLoaded', () => {
             // Handle contact editing
             const contacts = [];
             const editOptions = numberOptions.querySelectorAll('.edit-mode');
+            let hasInvalidPhone = false;
+
             editOptions.forEach(option => {
                 const name = option.querySelector('.contact-name').value.trim();
                 const phone = option.querySelector('.contact-phone').value.trim();
-                if (name && phone && /^\d+$/.test(phone)) {
-                    contacts.push({ name, phone });
+
+                // Check if phone is valid (10 digits or 1+10 digits)
+                const isValidPhone = /^(1?\d{10})$/.test(phone);
+
+                if (name && phone) {
+                    if (isValidPhone) {
+                        contacts.push({ name, phone });
+                    } else {
+                        hasInvalidPhone = true;
+                    }
                 }
             });
+
+            if (hasInvalidPhone) {
+                showNotification('Phone numbers must be 10 digits', 'danger');
+                return;
+            }
 
             if (contacts.length === 0) {
                 showNotification('Please add at least one valid contact', 'danger');
@@ -354,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         hash,
                         utc,
-                        contacts,
+                        contacts: editModeConfig.contacts,
                         selected: currentConfig.selected
                     }),
                 });
@@ -364,12 +383,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 currentConfig = await response.json();
+                editModeConfig = null;  // Clear edit mode config after successful save
                 displayUpdates(currentConfig.updates);
                 showNotification('Contacts updated successfully', 'success');
                 isEditMode = false;
                 editContactsButton.querySelector('span:not(.icon)').textContent = 'Edit Contacts';
                 applyButton.textContent = 'Apply Forwarding';
-                displayContacts();
+                displayContacts(currentConfig);
             } catch (error) {
                 console.error('Error updating contacts:', error);
                 showNotification('Failed to update contacts', 'danger');
@@ -478,14 +498,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch and display numbers
     async function fetchAndDisplayNumbers() {
         try {
-            const response = await fetch(r2Url);
+            const response = await fetch(r2Url, {
+                cache: 'no-store' // Prevent caching of the response
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch configuration');
             }
             currentConfig = await response.json();
 
             // Display contacts
-            displayContacts();
+            displayContacts(currentConfig);
 
             // Display updates from config
             if (currentConfig.updates) {

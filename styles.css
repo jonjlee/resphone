@@ -22,16 +22,7 @@
     margin-bottom: 1.5rem;
 }
 
-/* Style the select dropdown */
-.select:not(.is-multiple):not(.is-loading)::after {
-    border-color: #3273dc;
-}
-
 /* Add hover effect to buttons */
-.button.is-primary:hover {
-    background-color: #276cda;
-}
-
 .number-options {
     border: 1px solid #dbdbdb;
     border-radius: 4px;
@@ -48,7 +39,7 @@
 }
 
 .number-option.selected {
-    background-color: #3273dc;
+    background-color: hsl(204, 86%, 53%);
     color: white;
 }
 
