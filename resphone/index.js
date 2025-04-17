@@ -15,7 +15,10 @@ const plivoFwd = (phone, debugInfo = null) => {
         formattedPhone = `+1${phone}`;
     }
 
-    if (formattedPhone && /^\+1\d{10}$/.test(formattedPhone)) {
+    if (phone == 'none') {
+        // No resident on call currently
+        resp.push(`<Speak>There is no on-call resident. Goodbye.</Speak>`);
+    } else if (formattedPhone && /^\+1\d{10}$/.test(formattedPhone)) {
         // Forward call to the given phone number
         resp.push(`<Dial><Number>${formattedPhone}</Number></Dial>`);
     } else {
