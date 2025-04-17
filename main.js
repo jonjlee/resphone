@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const customNumberInput = document.getElementById('customNumberInput');
     const customNumberError = document.getElementById('customNumberError');
     const numberOptions = document.querySelector('.number-options');
+    const contactOptions = document.querySelector('.contact-options');
     const toggleUpdates = document.getElementById('toggleUpdates');
     const updatesContent = document.getElementById('updatesContent');
     const updatesList = document.getElementById('updatesList');
@@ -92,9 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayContacts(config) {
         if (!config) return;
 
-        // Clear existing options except custom and loading
-        const existingOptions = numberOptions.querySelectorAll('.number-option:not(#customOption)');
-        existingOptions.forEach(opt => opt.remove());
+        // Clear existing options
+        contactOptions.innerHTML = '';
 
         // Remove loading message if it exists
         const loadingMessage = numberOptions.querySelector('.has-text-centered');
@@ -102,8 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingMessage.remove();
         }
 
-        // Hide custom option in edit mode
+        // Hide custom and none options in edit mode
+        const noneOption = document.getElementById('noneOption');
         customOption.style.display = isEditMode ? 'none' : 'block';
+        noneOption.style.display = isEditMode ? 'none' : 'block';
         customNumberField.style.display = 'none';
         customNumberInput.value = '';
         customNumberError.style.display = 'none';
@@ -148,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 `;
-                numberOptions.insertBefore(option, customOption);
+                contactOptions.appendChild(option);
 
                 // Add input blur handlers to update config
                 const nameInput = option.querySelector('.contact-name');
@@ -180,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         displayContacts(config);
                         // Highlight the moved contact
-                        const movedOption = numberOptions.querySelector(`.edit-mode:nth-child(${index})`);
+                        const movedOption = contactOptions.querySelector(`.edit-mode:nth-child(${index})`);
                         if (movedOption) {
                             movedOption.classList.add('selected');
                         }
@@ -199,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         displayContacts(config);
                         // Highlight the moved contact
-                        const movedOption = numberOptions.querySelector(`.edit-mode:nth-child(${index + 2})`);
+                        const movedOption = contactOptions.querySelector(`.edit-mode:nth-child(${index + 2})`);
                         if (movedOption) {
                             movedOption.classList.add('selected');
                         }
@@ -220,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </button>
                 </div>
             `;
-            numberOptions.insertBefore(addButton, customOption);
+            contactOptions.appendChild(addButton);
 
             // Add new contact handler
             addButton.querySelector('button').addEventListener('click', () => {
@@ -236,21 +238,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 option.dataset.value = contact.phone;
                 option.dataset.name = contact.name;
                 option.textContent = `${contact.name} - (${contact.phone.slice(0, 3)}) ${contact.phone.slice(3, 6)}-${contact.phone.slice(6)}`;
-                numberOptions.insertBefore(option, customOption);
+                contactOptions.appendChild(option);
             });
 
             // Select the current forwarding number
             const selectedPhone = config.selected;
-            const matchingOption = numberOptions.querySelector(`[data-value="${selectedPhone}"]`);
-
-            if (matchingOption) {
-                matchingOption.classList.add('selected');
-                selectedOption = matchingOption;
+            if (selectedPhone === 'none') {
+                noneOption.classList.add('selected');
+                selectedOption = noneOption;
             } else {
-                customOption.classList.add('selected');
-                selectedOption = customOption;
-                customNumberField.style.display = 'block';
-                customNumberInput.value = selectedPhone;
+                const matchingOption = contactOptions.querySelector(`[data-value="${selectedPhone}"]`);
+                if (matchingOption) {
+                    matchingOption.classList.add('selected');
+                    selectedOption = matchingOption;
+                } else {
+                    customOption.classList.add('selected');
+                    selectedOption = customOption;
+                    customNumberField.style.display = 'block';
+                    customNumberInput.value = selectedPhone;
+                }
             }
         }
 
@@ -259,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function attachOptionListeners() {
-        const options = numberOptions.querySelectorAll('.number-option');
+        const options = [...numberOptions.querySelectorAll('.number-option'), ...contactOptions.querySelectorAll('.number-option')];
         options.forEach(option => {
             option.addEventListener('click', function () {
                 // Remove selected class from all options
@@ -296,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isEditMode) {
             // Handle contact editing
             const contacts = [];
-            const editOptions = numberOptions.querySelectorAll('.edit-mode');
+            const editOptions = contactOptions.querySelectorAll('.edit-mode');
             let hasInvalidPhone = false;
 
             editOptions.forEach(option => {
@@ -370,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyButton.disabled = false;
             }
         } else {
-            // Handle forwarding number update (existing code)
+            // Handle forwarding number update
             if (!selectedOption) {
                 alert('Please select a forwarding number');
                 return;
@@ -386,9 +392,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const matchingContact = currentConfig.contacts.find(contact => contact.phone === phoneNumber);
                 if (matchingContact) {
-                    const matchingOption = numberOptions.querySelector(`[data-value="${phoneNumber}"]`);
+                    const matchingOption = contactOptions.querySelector(`[data-value="${phoneNumber}"]`);
                     if (matchingOption) {
-                        numberOptions.querySelectorAll('.number-option').forEach(opt => opt.classList.remove('selected'));
+                        [...numberOptions.querySelectorAll('.number-option'), ...contactOptions.querySelectorAll('.number-option')].forEach(opt => opt.classList.remove('selected'));
                         matchingOption.classList.add('selected');
                         selectedOption = matchingOption;
                         customNumberField.style.display = 'none';
@@ -396,6 +402,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         phoneNumber = matchingContact.phone;
                     }
                 }
+            } else if (selectedOption.dataset.value === 'none') {
+                phoneNumber = 'none';
             } else {
                 phoneNumber = selectedOption.dataset.value;
             }
@@ -434,11 +442,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 displayUpdates(currentConfig.updates);
                 showNotification('Forwarding number updated successfully', 'success');
 
-                const matchingOption = numberOptions.querySelector(`[data-value="${currentConfig.selected}"]`);
+                const matchingOption = contactOptions.querySelector(`[data-value="${currentConfig.selected}"]`);
                 if (matchingOption) {
-                    numberOptions.querySelectorAll('.number-option').forEach(opt => opt.classList.remove('selected'));
+                    [...numberOptions.querySelectorAll('.number-option'), ...contactOptions.querySelectorAll('.number-option')].forEach(opt => opt.classList.remove('selected'));
                     matchingOption.classList.add('selected');
                     selectedOption = matchingOption;
+                    customNumberField.style.display = 'none';
+                    customNumberInput.value = '';
+                } else if (currentConfig.selected === 'none') {
+                    [...numberOptions.querySelectorAll('.number-option'), ...contactOptions.querySelectorAll('.number-option')].forEach(opt => opt.classList.remove('selected'));
+                    noneOption.classList.add('selected');
+                    selectedOption = noneOption;
                     customNumberField.style.display = 'none';
                     customNumberInput.value = '';
                 }

@@ -23,7 +23,7 @@
         <div class="container narrow-container">
             <div class="level">
                 <div class="level-left">
-                    <h1 class="title">Select On-Call Contact</h1>
+                    <h1 class="title">Select On-Call</h1>
                 </div>
                 <div class="level-right" style="margin-top: 0rem;">
                     <a href="index.html" style="padding: 0;" class="button is-text logout-button">Log out</a>
@@ -49,10 +49,15 @@
                             <div class="has-text-centered has-text-grey">
                                 Loading...
                             </div>
+                            <div class="contact-options">
+                            </div>
+                            <div class="number-option" data-value="none" id="noneOption">
+                                None
+                            </div>
                             <div class="number-option" data-value="custom" id="customOption">
                                 Other
                             </div>
-                            <div class="field" id="customNumberField" style="display: none; margin-top: 0.5rem;">
+                            <div class="field" id="customNumberField" style="display: none;">
                                 <div class="control">
                                     <input class="input" type="tel" id="customNumberInput"
                                         placeholder="Enter phone number (e.g. 1234567890)">
