@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const WORKER_URL = 'https://resphone.jonjlee.workers.dev';
 
     // Check if user is authenticated
-    if (!sessionStorage.getItem('authenticated')) {
+    if (!localStorage.getItem('authenticated')) {
         window.location.href = 'index.html';
         return;
     }
@@ -84,8 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle logout
     document.querySelector('.logout-button').addEventListener('click', (e) => {
         e.preventDefault();
-        sessionStorage.removeItem('authenticated');
-        sessionStorage.removeItem('password');
+        localStorage.removeItem('authenticated');
+        localStorage.removeItem('password');
         window.location.href = 'index.html';
     });
 
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyButton.textContent = 'Saving...';
                 showNotification('Saving contacts...', 'info');
 
-                const password = sessionStorage.getItem('password');
+                const password = localStorage.getItem('password');
                 const utc = Math.floor(Date.now() / 1000);
                 const hash = await crypto.subtle.digest('SHA-256',
                     new TextEncoder().encode(`${utc}|${password}`))
@@ -413,7 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyButton.textContent = 'Applying...';
                 showNotification('Applying forwarding number...', 'info');
 
-                const password = sessionStorage.getItem('password');
+                const password = localStorage.getItem('password');
                 const utc = Math.floor(Date.now() / 1000);
                 const hash = await crypto.subtle.digest('SHA-256',
                     new TextEncoder().encode(`${utc}|${password}`))

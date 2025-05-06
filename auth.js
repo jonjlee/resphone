@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                // Store authentication state and password in sessionStorage
-                sessionStorage.setItem('authenticated', 'true');
-                sessionStorage.setItem('password', password);
+                // Store authentication state and password. Persist across sessions by using localStorage
+                localStorage.setItem('authenticated', 'true');
+                localStorage.setItem('password', password);
                 // Redirect to main page
                 window.location.href = 'main.html';
             } else {
